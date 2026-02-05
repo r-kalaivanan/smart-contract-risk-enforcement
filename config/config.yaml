@@ -1,0 +1,19 @@
+# sc-guard Configuration File
+
+# Directory containing trained ML models
+models_dir: "models/"
+
+# Slither analysis timeout (seconds)
+slither_timeout: 60
+
+# Risk score thresholds for enforcement decisions
+risk_thresholds:
+  allow: 3.0 # Risk 0-3 → ALLOW
+  warn: 7.0 # Risk 4-6 → WARN, Risk 7-10 → BLOCK
+
+# Vulnerability severity weights for risk calculation
+vulnerability_weights:
+  reentrancy: 3.0 # Critical: fund drainage
+  unchecked_external_call: 2.0 # High: silent failures
+  access_control: 2.5 # High: unauthorized access
+  dangerous_construct: 2.5 # High: tx.origin, selfdestruct
