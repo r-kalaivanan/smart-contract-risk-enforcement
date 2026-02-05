@@ -30,7 +30,7 @@ SC-GUARD detects **4 critical vulnerability types**:
 
 ---
 
-## 🏗️ System Architecture
+## System Architecture
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -69,9 +69,9 @@ SC-GUARD detects **4 critical vulnerability types**:
                                  ▼
 ┌─────────────────────────────────────────────────────────────────┐
 │  ENFORCEMENT POLICY                                              │
-│  ├─ Risk 0-3:  ALLOW ✅ (Deploy safely)                         │
-│  ├─ Risk 4-6:  WARN  ⚠️ (Manual review recommended)            │
-│  └─ Risk 7-10: BLOCK 🚫 (Prevent deployment)                    │
+│  ├─ Risk 0-3:  ALLOW (Deploy safely)                            │
+│  ├─ Risk 4-6:  WARN (Manual review recommended)                 │
+│  └─ Risk 7-10: BLOCK (Prevent deployment)                       │
 └─────────────────────────────────────────────────────────────────┘
                                  │
                                  ▼
@@ -82,7 +82,7 @@ SC-GUARD detects **4 critical vulnerability types**:
 
 ---
 
-## 🚀 Quick Start
+## Quick Start
 
 ### 1. Prerequisites
 
@@ -141,7 +141,7 @@ sc-guard train --dataset datasets/ --test-split 0.2
 
 ---
 
-## 📂 Project Structure
+## Project Structure
 
 ```
 sc-guard/
@@ -180,7 +180,7 @@ sc-guard/
 
 ---
 
-## 🧪 Example Output
+## Example Output
 
 ```bash
 $ sc-guard scan vulnerable_dao.sol
@@ -219,7 +219,7 @@ Recommendations:
 
 ---
 
-## 🔬 Technical Details
+## Technical Details
 
 ### Feature Extraction (16 features)
 
@@ -263,7 +263,7 @@ Recommendations:
 
 ---
 
-## 📊 Dataset
+## Dataset
 
 **Source**: [SmartBugs Curated Dataset](https://github.com/smartbugs/smartbugs-curated)
 
@@ -284,20 +284,20 @@ Recommendations:
 
 ---
 
-## 🛠️ Development Roadmap
+## Development Roadmap
 
-### ✅ Phase 1: Dataset Collection (Completed)
+### Phase 1: Dataset Collection (Completed)
 
 - SmartBugs dataset integration
 - Vulnerability metadata parsing
 
-### 🔄 Phase 2: Static Analysis (In Progress)
+### Phase 2: Static Analysis (In Progress)
 
 - Slither integration
 - AST feature extraction
 - Call graph analysis
 
-### 📅 Phase 3-9: Remaining Tasks
+### Phase 3-9: Remaining Tasks
 
 - [ ] Dataset labeling and feature construction
 - [ ] ML model training and evaluation
@@ -309,7 +309,7 @@ Recommendations:
 
 ---
 
-## 🧰 Technology Stack
+## Technology Stack
 
 | Component       | Technology   | Purpose                               |
 | --------------- | ------------ | ------------------------------------- |
@@ -323,7 +323,7 @@ Recommendations:
 
 ---
 
-## 📝 Configuration
+## Configuration
 
 Edit [config/config.yaml](config/config.yaml) to customize:
 
@@ -343,7 +343,7 @@ vulnerability_weights:
 
 ---
 
-## 🧪 Testing
+## Testing
 
 ```bash
 # Run all tests
@@ -358,7 +358,7 @@ pytest tests/test_slither_analyzer.py
 
 ---
 
-## 📚 Academic Context
+## Academic Context
 
 **Project Type**: Final-year undergraduate research project  
 **Timeline**: January 2026 - May 2026 (4-5 months)  
@@ -373,19 +373,19 @@ pytest tests/test_slither_analyzer.py
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 This is an academic project. Contributions, suggestions, and feedback are welcome!
 
 ---
 
-## 📄 License
+## License
 
 See [LICENSE](LICENSE) file.
 
 ---
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 - **SmartBugs Team**: Curated vulnerability dataset
 - **Trail of Bits**: Slither static analysis framework
@@ -393,4 +393,4 @@ See [LICENSE](LICENSE) file.
 
 ---
 
-**Built with ❤️ for blockchain security**
+**Built for blockchain security**
