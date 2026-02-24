@@ -142,7 +142,7 @@ sc-guard scan mycontract.sol --verbose
 sc-guard --version
 ```
 
-> **📖 For step-by-step instructions**, see [QUICKSTART.md](QUICKSTART.md)
+For detailed setup instructions, see [QUICKSTART.md](QUICKSTART.md).
 
 ---
 
@@ -188,16 +188,15 @@ sc-guard/
 ├── test_contracts/                 # Sample test contracts
 │   └── ComplexVulnerable.sol
 ├── docs/
-│   ├── PROJECT_SUMMARY.md          # 📘 Complete technical documentation
-│   └── (Legacy docs removed)       # Consolidated into PROJECT_SUMMARY.md
+│   └── PROJECT_SUMMARY.md          # Complete technical documentation
 ├── requirements.txt                # Python dependencies
 ├── setup.py                        # Package installation
-├── QUICKSTART.md                   # 🚀 Quick getting started guide
+├── QUICKSTART.md                   # Quick getting started guide
 ├── LICENSE                         # MIT License
 └── README.md                       # This file
 ```
 
-> **📚 For detailed technical documentation**, see [docs/PROJECT_SUMMARY.md](docs/PROJECT_SUMMARY.md)
+For detailed technical documentation, see [docs/PROJECT_SUMMARY.md](docs/PROJECT_SUMMARY.md).
 
 ---
 
@@ -208,23 +207,20 @@ $ sc-guard scan vulnerable_dao.sol
 ```
 
 ```
-┌───────────────────────────────────────────────────┐
-│       sc-guard Smart Contract Scanner             │
-└───────────────────────────────────────────────────┘
+sc-guard Smart Contract Scanner
+================================
+
 Analyzing: vulnerable_dao.sol
 
-→ Running static analysis...
-→ Running ML vulnerability detection...
-→ Calculating risk score...
-→ Applying enforcement policy...
+Running static analysis...
+Running ML vulnerability detection...
+Calculating risk score...
+Applying enforcement policy...
 
-╔═══════════════════════════════════════════════════╗
-║  ✗ BLOCK                                          ║
-║  Risk Score: 8.4/10 (CRITICAL)                    ║
-╚═══════════════════════════════════════════════════╝
+[BLOCK] Risk Score: 8.4/10 (CRITICAL)
 
 Detected Vulnerabilities:
-  • reentrancy
+  - reentrancy
 
 Justification:
   Risk score 8.4/10 exceeds safety threshold. High probability
@@ -305,15 +301,11 @@ Recommendations:
 - `label_unchecked_external_call` (24 positive samples)
 - `label_dangerous_construct` (45 positive samples)
 
-> **📚 For dataset details**, see [docs/PROJECT_SUMMARY.md#dataset-smartbugs-curated](docs/PROJECT_SUMMARY.md)
-> ✅ **Phase 1**: Dataset Collection (SmartBugs integration) - **COMPLETE**  
-> ✅ **Phase 2**: Static Analysis (Slither, AST, Call Graph) - **COMPLETE**  
-> ✅ **Phase 3**: ML Training (4 Random Forest models) - **COMPLETE**  
-> 🔄 **Phase 4**: CLI & Production Deployment - **IN PROGRESS**  
-> 📋 **Phase 5**: Testing & Validation - **PENDING**  
-> 📋 **Phase 6**: Documentation & Publication - **PENDING**
+For detailed dataset information, see [docs/PROJECT_SUMMARY.md#dataset-smartbugs-curated](docs/PROJECT_SUMMARY.md).
 
-### Model Performance
+---
+
+## Model Performance
 
 | Model                   | F1 Score | Precision | Recall | ROC-AUC |
 | ----------------------- | -------- | --------- | ------ | ------- |
@@ -326,13 +318,7 @@ Recommendations:
 **Training Dataset**: 110 contracts (80% split)  
 **Test Dataset**: 27 contracts (20% split)
 
-> **📊 For complete performance analysis**, see [docs/PROJECT_SUMMARY.md#model-performance--results](docs/PROJECT_SUMMARY.md)on
-
-- [ ] Risk scoring engine
-- [ ] Enforcement policy implementation
-- [ ] CLI refinement
-- [ ] Unit testing (pytest)
-- [ ] Documentation and final report
+For complete performance analysis, see [docs/PROJECT_SUMMARY.md#model-performance--results](docs/PROJECT_SUMMARY.md).
 
 ---
 
@@ -385,19 +371,46 @@ vulnerability_weights:
 4. **Risk-Aware Enforcement**: Graduated response (ALLOW/WARN/BLOCK)
 5. **Production-Ready**: <3 seconds per contract, no GPU required
 
-**Why This Approach Works**:
+**Advantages**:
 
-✅ **Small dataset ready**: Random Forest works with 100-200 samples (vs 10K+ for deep learning)  
-✅ **Fast training**: <5 minutes on CPU (vs hours on GPU)  
-✅ **Explainable**: Security auditors can understand decisions  
-✅ **Deterministic base**: Static analysis provides reliable foundation  
-✅ **Real-world applicable**: Can integrate into CI/CD pipelines
+- **Small dataset ready**: Random Forest works with 100-200 samples (vs 10K+ for deep learning)
+- **Fast training**: Less than 5 minutes on CPU (vs hours on GPU)
+- **Explainable**: Security auditors can understand decisions
+- **Deterministic base**: Static analysis provides reliable foundation
+- **Real-world applicable**: Can integrate into CI/CD pipelines
+
+---
+
+## Testing
+
+```bash
+# Run all tests
+pytest
+
+# Run with coverage
+pytest --cov=src --cov-report=html
+
+# Run specific test
+pytest tests/test_slither_analyzer.py -v
+```
+
+---
+
+## Documentation
+
+**Complete Technical Documentation**: [docs/PROJECT_SUMMARY.md](docs/PROJECT_SUMMARY.md)
+
+This comprehensive document includes complete system architecture, dataset details, feature extraction pipeline, ML model specifications, training methodology, performance metrics, and implementation details.
+
+**Quick Start Guide**: [QUICKSTART.md](QUICKSTART.md)
+
+Step-by-step instructions to build dataset, train models, and analyze contracts.
 
 ---
 
 ## Contributing
 
-Contributions, suggestions, and feedback are welcome! Please open an issue or submit a pull request.
+Contributions, suggestions, and feedback are welcome. Please open an issue or submit a pull request.
 
 ---
 
@@ -428,52 +441,3 @@ If you use SC-GUARD in your research, please cite:
   url = {https://github.com/yourusername/sc-guard}
 }
 ```
-
----
-
-**🔒 Built for blockchain security**  
-**📊 Powered by interpretable machine learning**  
-**⚡ Production-ready vulnerability detection**
-
----
-
-## Testing
-
-```bash
-# Run all tests
-pytest
-
-# Run with coverage
-pytest --cov=src --cov-report=html
-
-# Run specific test
-pytest tests/test_slither_analyzer.py -v
-```
-
----
-
-## Documentation
-
-📚 **Complete Technical Documentation**: [docs/PROJECT_SUMMARY.md](docs/PROJECT_SUMMARY.md)
-
-This comprehensive 65-page document includes:
-
-- ✅ Complete system architecture and workflow
-- ✅ Dataset preparation and processing (143 contracts)
-- ✅ Static analysis with Slither (70+ detectors)
-- ✅ Feature extraction pipeline (16 hand-crafted features)
-- ✅ Multi-label classification strategy (4 binary labels)
-- ✅ ML model details (Random Forest, 100 trees, max_depth=10)
-- ✅ Training methodology (80/20 split, 10-fold CV)
-- ✅ Model performance metrics (F1: 68-83%, ROC-AUC: 0.79-0.89)
-- ✅ Risk scoring engine (weighted formula, 0-10 scale)
-- ✅ Real usage examples and CLI output
-- ✅ Implementation details (3,500 lines of code)
-- ✅ Research contributions and future work
-
-🚀 **Quick Start Guide**: [QUICKSTART.md](QUICKSTART.md)  
-Step-by-step instructions to build dataset, train models, and analyze contracts.
-
----
-
-## Configuration
