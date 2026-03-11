@@ -103,6 +103,7 @@ class RiskScoringEngine:
         # Normalize to 0-10 scale
         risk_score = (weighted_sum / self.total_weight) * 10
         risk_score = min(max(risk_score, 0.0), 10.0)  # Clamp to [0, 10]
+        risk_score = round(risk_score, 1)  # Round to 1 decimal place for consistency
         
         # Identify top risk factors
         top_risks = self._identify_top_risks(

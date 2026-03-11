@@ -15,6 +15,24 @@ click>=8.1.0                # Modern CLI framework with decorators
 rich>=13.0.0                # Beautiful terminal output (tables, colors, progress bars)
 colorama>=0.4.6             # Cross-platform colored terminal text
 
+# REST API (Phase 1)
+fastapi>=0.104.0            # Modern web framework for building APIs
+uvicorn[standard]>=0.24.0   # ASGI server for FastAPI
+python-multipart>=0.0.6     # Support for form data and file uploads
+slowapi>=0.1.9              # Rate limiting for FastAPI
+pydantic>=2.4.0             # Data validation using Python type annotations
+
+# Report Generation (Phase 1)
+jinja2>=3.1.2               # Template engine for HTML reports
+weasyprint>=60.0            # HTML to PDF conversion
+matplotlib>=3.8.0           # Static charts and graphs
+plotly>=5.17.0              # Interactive charts for reports
+pillow>=10.0.0              # Image processing for reports
+
+# Authentication (Optional - for future use)
+python-jose[cryptography]>=3.3.0  # JWT token handling
+passlib[bcrypt]>=1.7.4      # Password hashing
+
 # Data Processing
 pyyaml>=6.0                 # Configuration file parsing
 jsonschema>=4.17.0          # Validate JSON outputs
@@ -22,6 +40,8 @@ jsonschema>=4.17.0          # Validate JSON outputs
 # Development & Testing
 pytest>=7.4.0               # Unit testing framework
 pytest-cov>=4.1.0           # Code coverage reports
+pytest-asyncio>=0.21.0      # Async test support for FastAPI
+httpx>=0.25.0               # HTTP client for API testing
 black>=23.0.0               # Code formatter
 flake8>=6.0.0               # Linting
 

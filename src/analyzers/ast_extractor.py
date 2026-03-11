@@ -31,7 +31,7 @@ Feature Categories:
 from typing import Dict, List
 from dataclasses import dataclass, field
 import numpy as np
-from analyzers.graph_builder import CallGraphBuilder
+from src.analyzers.graph_builder import CallGraphBuilder
 
 
 @dataclass

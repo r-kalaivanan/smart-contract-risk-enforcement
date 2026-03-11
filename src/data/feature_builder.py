@@ -24,10 +24,10 @@ from tqdm import tqdm
 # Add parent directory to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from analyzers.slither_analyzer import SlitherAnalyzer
-from analyzers.ast_extractor import ASTFeatureExtractor, ContractFeatures
-from data.dataset_loader import DatasetLoader
-from data.label_encoder import LabelEncoder, ContractLabels
+from src.analyzers.slither_analyzer import SlitherAnalyzer
+from src.analyzers.ast_extractor import ASTFeatureExtractor, ContractFeatures
+from src.data.dataset_loader import DatasetLoader
+from src.data.label_encoder import LabelEncoder, ContractLabels
 
 
 class FeatureBuilder:

@@ -1,0 +1,73 @@
+version: "3.8"
+
+services:
+  # SC-Guard CLI Service
+  sc-guard-cli:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: sc-guard:latest
+    container_name: sc-guard-cli
+    volumes:
+      # Mount test contracts
+      - ./test_contracts:/data/test_contracts:ro
+      # Mount models directory
+      - ./models:/app/models:ro
+      # Mount output directory for reports
+      - ./outputs:/data/outputs
+    environment:
+      - PYTHONUNBUFFERED=1
+    command: sc-guard version
+    networks:
+      - sc-guard-network
+
+  # SC-Guard API Service (Future Phase)
+  sc-guard-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: sc-guard:latest
+    container_name: sc-guard-api
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./test_contracts:/data/test_contracts:ro
+      - ./models:/app/models:ro
+      - ./outputs:/data/outputs
+    environment:
+      - PYTHONUNBUFFERED=1
+      - SC_GUARD_API_KEY=${SC_GUARD_API_KEY:-dev-api-key-12345}
+      - SC_GUARD_RATE_LIMIT=${SC_GUARD_RATE_LIMIT:-10}
+    # Will be activated once API module is implemented
+    command: tail -f /dev/null
+    networks:
+      - sc-guard-network
+    depends_on:
+      - sc-guard-cli
+
+networks:
+  sc-guard-network:
+    driver: bridge
+
+# Example usage:
+#
+# Build images:
+#   docker-compose build
+#
+# Run CLI version check:
+#   docker-compose run --rm sc-guard-cli sc-guard version
+#
+# Scan a contract:
+#   docker-compose run --rm sc-guard-cli sc-guard scan /data/test_contracts/ReentrancyVulnerable.sol --verbose
+#
+# Generate JSON report:
+#   docker-compose run --rm sc-guard-cli sc-guard scan /data/test_contracts/ReentrancyVulnerable.sol --json > outputs/report.json
+#
+# Start API server (when implemented):
+#   docker-compose up sc-guard-api
+#
+# View logs:
+#   docker-compose logs -f
+#
+# Stop all services:
+#   docker-compose down

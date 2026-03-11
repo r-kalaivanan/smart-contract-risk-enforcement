@@ -119,9 +119,23 @@ class VulnerabilityClassifier:
             X_test: Feature matrix
             
         Returns:
-            Binary predictions (0 or 1)
+            Binary predictions (0 or 1) - for combined model, returns array of [reentrancy, access_control, unchecked]
         """
-        return self.model.predict(X_test)
+        # Handle combined model structure
+        if hasattr(self, 'models') and self.models is not None and isinstance(self.models, dict):
+            predictions = []
+            for vuln_type in ['reentrancy', 'access_control', 'unchecked_calls']:
+                if vuln_type in self.models:
+                    pred = self.models[vuln_type].predict(X_test)
+                    predictions.append(pred[0] if len(pred) > 0 else 0)
+                else:
+                    predictions.append(0)
+            return np.array([predictions])
+        elif hasattr(self, 'model') and self.model is not None:
+            # Individual model
+            return self.model.predict(X_test)
+        else:
+            raise ValueError("No trained model found. Please run create_combined_model.py first.")
     
     def predict_proba(self, X_test: np.ndarray) -> np.ndarray:
         """
@@ -132,9 +146,24 @@ class VulnerabilityClassifier:
             
         Returns:
             Probability of positive class (vulnerability present)
+            For combined model, returns array of [reentrancy_prob, access_control_prob, unchecked_prob]
         """
-        proba = self.model.predict_proba(X_test)
-        return proba[:, 1]  # Probability of class 1 (vulnerable)
+        # Handle combined model structure
+        if hasattr(self, 'models') and self.models is not None and isinstance(self.models, dict):
+            probabilities = []
+            for vuln_type in ['reentrancy', 'access_control', 'unchecked_calls']:
+                if vuln_type in self.models:
+                    proba = self.models[vuln_type].predict_proba(X_test)
+                    probabilities.append(proba[0, 1] if len(proba) > 0 else 0.0)
+                else:
+                    probabilities.append(0.0)
+            return np.array([probabilities])
+        elif hasattr(self, 'model') and self.model is not None:
+            # Individual model
+            proba = self.model.predict_proba(X_test)
+            return proba[:, 1]  # Probability of class 1 (vulnerable)
+        else:
+            raise ValueError("No trained model found. Please run create_combined_model.py first.")
     
     def evaluate(self, X_test: np.ndarray, y_test: np.ndarray) -> Dict:
         """
@@ -235,9 +264,34 @@ class VulnerabilityClassifier:
             VulnerabilityClassifier instance with loaded model
         """
         with open(model_path, 'rb') as f:
-            model = pickle.load(f)
+            loaded_data = pickle.load(f)
         
-        # Create classifier instance and attach model
-        clf = VulnerabilityClassifier()
-        clf.model = model
+        # Create classifier instance WITHOUT initializing default model
+        clf = VulnerabilityClassifier.__new__(VulnerabilityClassifier)
+        
+        # Handle both individual models and combined model structure
+        if isinstance(loaded_data, dict) and 'models' in loaded_data:
+            # Combined model structure
+            clf.models = loaded_data['models']
+            clf.model_info = loaded_data.get('model_info', {
+                'model_type': 'Random Forest',
+                'accuracy': 'N/A'
+            })
+            clf.model = None  # Explicitly set to None for combined models
+            clf.model_type = "combined"
+            clf.vulnerability_type = "multiple"
+            clf.feature_importance = None
+        else:
+            # Individual model
+            clf.model = loaded_data
+            clf.models = None  # Mark as single model
+            clf.model_info = {
+                'model_type': 'Random Forest',
+                'accuracy': 'N/A',
+                'n_estimators': 100
+            }
+            clf.model_type = "random_forest"
+            clf.vulnerability_type = "unknown"
+            clf.feature_importance = None
+        
         return clf

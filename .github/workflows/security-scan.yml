@@ -1,0 +1,175 @@
+name: Smart Contract Security Scan
+
+on:
+  push:
+    branches: [main, develop]
+    paths:
+      - "contracts/**/*.sol"
+      - "test_contracts/**/*.sol"
+  pull_request:
+    branches: [main, develop]
+    paths:
+      - "contracts/**/*.sol"
+      - "test_contracts/**/*.sol"
+  workflow_dispatch: # Allow manual triggers
+
+jobs:
+  scan-contracts:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        python-version: ["3.10"]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Cache Python dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y solc
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install -e .
+
+      - name: Verify installation
+        run: |
+          sc-guard version
+
+      - name: Scan all contracts
+        id: scan
+        run: |
+          mkdir -p outputs/scan-results
+          FAILED=0
+
+          for contract in test_contracts/*.sol; do
+            if [ -f "$contract" ]; then
+              echo "Scanning $contract..."
+              CONTRACT_NAME=$(basename "$contract")
+              OUTPUT_FILE="outputs/scan-results/${CONTRACT_NAME%.sol}_result.json"
+              
+              # Run scan and save result
+              if sc-guard scan "$contract" --json > "$OUTPUT_FILE"; then
+                RISK_SCORE=$(jq -r '.risk_score' "$OUTPUT_FILE")
+                DECISION=$(jq -r '.decision' "$OUTPUT_FILE")
+                RISK_CATEGORY=$(jq -r '.risk_category' "$OUTPUT_FILE")
+                
+                echo "✅ $CONTRACT_NAME: $DECISION (Risk: $RISK_SCORE/10 - $RISK_CATEGORY)"
+                
+                # Fail if HIGH risk detected
+                if [ "$RISK_CATEGORY" == "HIGH" ]; then
+                  echo "❌ HIGH RISK contract detected: $CONTRACT_NAME"
+                  FAILED=1
+                fi
+              else
+                echo "❌ Scan failed for $CONTRACT_NAME"
+                FAILED=1
+              fi
+            fi
+          done
+
+          # Exit with error if any high-risk contracts found
+          if [ $FAILED -eq 1 ]; then
+            echo "::error::High-risk contracts detected or scans failed"
+            exit 1
+          fi
+        continue-on-error: false
+
+      - name: Generate HTML reports
+        if: always()
+        run: |
+          for contract in test_contracts/*.sol; do
+            if [ -f "$contract" ]; then
+              CONTRACT_NAME=$(basename "$contract")
+              echo "Generating report for $CONTRACT_NAME..."
+              sc-guard scan "$contract" --report html --output "outputs/scan-results/${CONTRACT_NAME%.sol}_report.html" || true
+            fi
+          done
+
+      - name: Upload scan results
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: security-scan-results
+          path: outputs/scan-results/
+          retention-days: 30
+
+      - name: Create scan summary
+        if: always()
+        run: |
+          echo "## 🛡️ Security Scan Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Contract | Decision | Risk Score | Risk Category |" >> $GITHUB_STEP_SUMMARY
+          echo "|----------|----------|------------|---------------|" >> $GITHUB_STEP_SUMMARY
+
+          for json_file in outputs/scan-results/*_result.json; do
+            if [ -f "$json_file" ]; then
+              CONTRACT=$(basename "$json_file" | sed 's/_result.json//')
+              DECISION=$(jq -r '.decision' "$json_file")
+              RISK_SCORE=$(jq -r '.risk_score' "$json_file")
+              RISK_CATEGORY=$(jq -r '.risk_category' "$json_file")
+              
+              # Emoji based on decision
+              if [ "$DECISION" == "ALLOW" ]; then
+                EMOJI="✅"
+              elif [ "$DECISION" == "WARN" ]; then
+                EMOJI="⚠️"
+              else
+                EMOJI="❌"
+              fi
+              
+              echo "| $EMOJI $CONTRACT | $DECISION | $RISK_SCORE/10 | $RISK_CATEGORY |" >> $GITHUB_STEP_SUMMARY
+            fi
+          done
+
+      - name: Comment on PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+
+            // Read scan results
+            const resultsDir = 'outputs/scan-results';
+            const files = fs.readdirSync(resultsDir).filter(f => f.endsWith('_result.json'));
+
+            let comment = '## 🛡️ SC-Guard Security Scan Results\\n\\n';
+            comment += '| Contract | Decision | Risk Score | Vulnerabilities |\\n';
+            comment += '|----------|----------|------------|-----------------|\\n';
+
+            files.forEach(file => {
+              const data = JSON.parse(fs.readFileSync(path.join(resultsDir, file)));
+              const contract = file.replace('_result.json', '');
+              const emoji = data.decision === 'ALLOW' ? '✅' : data.decision === 'WARN' ? '⚠️' : '❌';
+              const vulns = data.detected_vulnerabilities?.join(', ') || 'None';
+              
+              comment += `| ${emoji} ${contract} | ${data.decision} | ${data.risk_score}/10 | ${vulns} |\\n`;
+            });
+
+            comment += '\\n---\\n';
+            comment += '_Powered by [SC-Guard](https://github.com/your-org/sc-guard)_';
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });

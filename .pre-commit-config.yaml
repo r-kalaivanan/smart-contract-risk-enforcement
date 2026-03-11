@@ -1,0 +1,58 @@
+# SC-Guard Pre-commit Configuration
+# Install: pip install pre-commit
+# Setup: pre-commit install
+
+repos:
+  # General file checks
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-json
+      - id: check-added-large-files
+        args: ["--maxkb=1000"]
+      - id: check-merge-conflict
+      - id: detect-private-key
+
+  # Python code formatting
+  - repo: https://github.com/psf/black
+    rev: 23.12.1
+    hooks:
+      - id: black
+        language_version: python3.10
+        args: ["--line-length=127"]
+
+  # Python linting
+  - repo: https://github.com/pycqa/flake8
+    rev: 7.0.0
+    hooks:
+      - id: flake8
+        args: ["--max-line-length=127", "--extend-ignore=E203,E501"]
+
+  # Import sorting
+  - repo: https://github.com/pycqa/isort
+    rev: 5.13.2
+    hooks:
+      - id: isort
+        args: ["--profile", "black"]
+
+  # SC-Guard contract scanning (custom hook)
+  - repo: local
+    hooks:
+      - id: sc-guard-scan
+        name: SC-Guard Security Scan
+        entry: bash -c 'for file in "$@"; do sc-guard scan "$file" --json || exit 1; done' --
+        language: system
+        files: '\.sol$'
+        pass_filenames: true
+        verbose: true
+
+      - id: pytest
+        name: Run pytest
+        entry: pytest
+        language: system
+        pass_filenames: false
+        always_run: true
+        stages: [commit]

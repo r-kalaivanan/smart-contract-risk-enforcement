@@ -68,7 +68,7 @@ class EnforcementResult:
         """Convert to dictionary for JSON serialization."""
         return {
             "decision": self.decision.value,
-            "risk_score": round(self.risk_score, 2),
+            "risk_score": round(self.risk_score, 1),  # Round to 1 decimal place for consistency
             "risk_category": self.risk_category,
             "justification": self.justification,
             "recommendations": self.recommendations,

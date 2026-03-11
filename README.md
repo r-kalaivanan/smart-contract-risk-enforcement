@@ -142,7 +142,7 @@ sc-guard scan mycontract.sol --verbose
 sc-guard --version
 ```
 
-For detailed setup instructions, see [QUICKSTART.md](QUICKSTART.md).
+For detailed setup instructions, see [docs/QUICKSTART.md](docs/QUICKSTART.md).
 
 ---
 
@@ -151,24 +151,25 @@ For detailed setup instructions, see [QUICKSTART.md](QUICKSTART.md).
 ```
 sc-guard/
 ├── src/                            # Core source code
-│   ├── analyzers/
+│   ├── analyzers/                  # Static analysis modules
 │   │   ├── slither_analyzer.py     # Slither integration
 │   │   ├── ast_extractor.py        # AST feature extraction (16 features)
 │   │   └── graph_builder.py        # Call graph analysis
-│   ├── data/
+│   ├── data/                       # Dataset processing
 │   │   ├── dataset_loader.py       # SmartBugs dataset loader
 │   │   ├── label_generator.py      # Label generation (4 binary labels)
 │   │   ├── label_encoder.py        # SmartBugs category mapping
 │   │   └── feature_builder.py      # Dataset construction pipeline
-│   ├── ml/
+│   ├── ml/                         # Machine learning
 │   │   └── train_model.py          # Random Forest training
-│   ├── scoring/
+│   ├── scoring/                    # Risk assessment
 │   │   └── risk_engine.py          # Risk score calculation (0-10 scale)
-│   ├── enforcement/
+│   ├── enforcement/                # Policy enforcement
 │   │   └── policy.py               # Deployment policy (ALLOW/WARN/BLOCK)
-│   ├── cli/
-│   │   └── main.py                 # Command-line interface
-│   └── utils/
+│   ├── reporting/                  # Report generation
+│   ├── cli/                        # Command-line interface
+│   │   └── main.py                 # CLI entry point
+│   └── utils/                      # Utility functions
 │       ├── logger.py               # Logging utilities
 │       ├── config.py               # Configuration management
 │       └── file_utils.py           # File handling
@@ -186,12 +187,23 @@ sc-guard/
 │   ├── conftest.py
 │   └── test_slither_analyzer.py
 ├── test_contracts/                 # Sample test contracts
-│   └── ComplexVulnerable.sol
-├── docs/
-│   └── PROJECT_SUMMARY.md          # Complete technical documentation
+├── docs/                           # Documentation
+│   ├── PROJECT_SUMMARY.md          # Complete technical documentation
+│   ├── QUICKSTART.md               # Quick getting started guide
+│   ├── TECHNICAL_GUIDE.md          # Deep technical details
+│   ├── FAQ.md                      # Frequently asked questions
+│   ├── LEARNING_GUIDE.md           # Learning resources and concepts
+│   ├── ML_COMPONENT_EXPLAINED.md   # ML model explanation
+│   ├── RISK_CALCULATION_EXPLAINED.md  # Risk scoring details
+│   ├── MODEL_PERFORMANCE_SUMMARY.md   # Model metrics and results
+│   └── PROJECT_DEMO_GUIDE.md       # Demo instructions
+├── api/                            # REST API (optional)
+├── templates/                      # HTML report templates
 ├── requirements.txt                # Python dependencies
 ├── setup.py                        # Package installation
-├── QUICKSTART.md                   # Quick getting started guide
+├── run_demo.py                     # Quick demo script
+├── Dockerfile                      # Docker container definition
+├── docker-compose.yml              # Docker compose configuration
 ├── LICENSE                         # MIT License
 └── README.md                       # This file
 ```
@@ -402,9 +414,19 @@ pytest tests/test_slither_analyzer.py -v
 
 This comprehensive document includes complete system architecture, dataset details, feature extraction pipeline, ML model specifications, training methodology, performance metrics, and implementation details.
 
-**Quick Start Guide**: [QUICKSTART.md](QUICKSTART.md)
+**Quick Start Guide**: [docs/QUICKSTART.md](docs/QUICKSTART.md)
 
 Step-by-step instructions to build dataset, train models, and analyze contracts.
+
+**Additional Resources**:
+
+- [Technical Guide](docs/TECHNICAL_GUIDE.md) - Deep dive into implementation details
+- [FAQ](docs/FAQ.md) - Frequently asked questions
+- [Learning Guide](docs/LEARNING_GUIDE.md) - Key concepts and learning resources
+- [ML Component Explained](docs/ML_COMPONENT_EXPLAINED.md) - Machine learning model details
+- [Risk Calculation Explained](docs/RISK_CALCULATION_EXPLAINED.md) - Risk scoring methodology
+- [Model Performance Summary](docs/MODEL_PERFORMANCE_SUMMARY.md) - Training metrics and results
+- [Demo Guide](docs/PROJECT_DEMO_GUIDE.md) - How to run demonstrations
 
 ---
 

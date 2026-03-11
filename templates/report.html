@@ -1,0 +1,560 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SC-Guard Security Report - {{ contract_name }}</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          "Helvetica Neue", Arial, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        background: #f5f5f5;
+        padding: 20px;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        background: white;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+        overflow: hidden;
+      }
+
+      /* Header */
+      .header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 40px;
+      }
+
+      .header h1 {
+        font-size: 32px;
+        margin-bottom: 10px;
+      }
+
+      .header .subtitle {
+        font-size: 18px;
+        opacity: 0.9;
+      }
+
+      .timestamp {
+        margin-top: 15px;
+        font-size: 14px;
+        opacity: 0.8;
+      }
+
+      /* Main Content */
+      .content {
+        padding: 40px;
+      }
+
+      /* Executive Summary */
+      .executive-summary {
+        background: #f8f9fa;
+        border-left: 4px solid #667eea;
+        padding: 20px;
+        margin-bottom: 30px;
+        border-radius: 4px;
+      }
+
+      .executive-summary h2 {
+        color: #667eea;
+        margin-bottom: 15px;
+      }
+
+      /* Decision Panel */
+      .decision-panel {
+        text-align: center;
+        padding: 30px;
+        margin: 30px 0;
+        border-radius: 8px;
+        border: 3px solid;
+      }
+
+      .decision-panel.allow {
+        background: #d4edda;
+        border-color: #28a745;
+        color: #155724;
+      }
+
+      .decision-panel.warn {
+        background: #fff3cd;
+        border-color: #ffc107;
+        color: #856404;
+      }
+
+      .decision-panel.block {
+        background: #f8d7da;
+        border-color: #dc3545;
+        color: #721c24;
+      }
+
+      .decision-icon {
+        font-size: 48px;
+        margin-bottom: 10px;
+      }
+
+      .decision-text {
+        font-size: 32px;
+        font-weight: bold;
+        margin-bottom: 10px;
+      }
+
+      .risk-score {
+        font-size: 24px;
+        margin-top: 15px;
+      }
+
+      /* Section */
+      .section {
+        margin: 40px 0;
+      }
+
+      .section h2 {
+        color: #333;
+        border-bottom: 2px solid #667eea;
+        padding-bottom: 10px;
+        margin-bottom: 20px;
+        font-size: 24px;
+      }
+
+      /* Vulnerabilities List */
+      .vulnerability-list {
+        list-style: none;
+      }
+
+      .vulnerability-item {
+        background: #fff3cd;
+        border-left: 4px solid #ffc107;
+        padding: 15px;
+        margin: 10px 0;
+        border-radius: 4px;
+      }
+
+      .vulnerability-item.high {
+        background: #f8d7da;
+        border-color: #dc3545;
+      }
+
+      /* Recommendations */
+      .recommendations {
+        background: #d1ecf1;
+        border-left: 4px solid #17a2b8;
+        padding: 20px;
+        margin: 20px 0;
+        border-radius: 4px;
+      }
+
+      .recommendations ol {
+        margin-left: 20px;
+        margin-top: 15px;
+      }
+
+      .recommendations li {
+        margin: 10px 0;
+        line-height: 1.8;
+      }
+
+      /* Table */
+      .data-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 20px 0;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .data-table th {
+        background: #667eea;
+        color: white;
+        padding: 12px;
+        text-align: left;
+        font-weight: 600;
+      }
+
+      .data-table td {
+        padding: 12px;
+        border-bottom: 1px solid #ddd;
+      }
+
+      .data-table tr:hover {
+        background: #f8f9fa;
+      }
+
+      /* Badge */
+      .badge {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 12px;
+        font-size: 12px;
+        font-weight: 600;
+        text-transform: uppercase;
+      }
+
+      .badge.success {
+        background: #28a745;
+        color: white;
+      }
+
+      .badge.warning {
+        background: #ffc107;
+        color: #333;
+      }
+
+      .badge.danger {
+        background: #dc3545;
+        color: white;
+      }
+
+      .badge.info {
+        background: #17a2b8;
+        color: white;
+      }
+
+      /* Risk Indicator */
+      .risk-indicator {
+        display: inline-block;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        margin-right: 8px;
+      }
+
+      .risk-indicator.low {
+        background: #28a745;
+      }
+
+      .risk-indicator.medium {
+        background: #ffc107;
+      }
+
+      .risk-indicator.high {
+        background: #dc3545;
+      }
+
+      /* Footer */
+      .footer {
+        background: #f8f9fa;
+        padding: 30px;
+        text-align: center;
+        color: #6c757d;
+        margin-top: 40px;
+      }
+
+      .footer p {
+        margin: 5px 0;
+      }
+
+      /* Print Styles */
+      @media print {
+        body {
+          background: white;
+          padding: 0;
+        }
+
+        .container {
+          box-shadow: none;
+        }
+
+        .data-table tr:hover {
+          background: none;
+        }
+      }
+
+      /* Chart Container */
+      .chart-container {
+        margin: 30px 0;
+        padding: 20px;
+        background: #f8f9fa;
+        border-radius: 8px;
+      }
+
+      /* Progress Bar */
+      .progress-bar {
+        width: 100%;
+        height: 30px;
+        background: #e9ecef;
+        border-radius: 15px;
+        overflow: hidden;
+        margin-top: 10px;
+      }
+
+      .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #28a745, #ffc107, #dc3545);
+        transition: width 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        padding-right: 15px;
+        color: white;
+        font-weight: bold;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <!-- Header -->
+      <div class="header">
+        <h1>🛡️ SC-Guard Security Report</h1>
+        <div class="subtitle">Smart Contract Vulnerability Analysis</div>
+        <div class="timestamp">
+          <strong>Contract:</strong> {{ contract_name }}<br />
+          <strong>Generated:</strong> {{ timestamp }}<br />
+          <strong>Scanner Version:</strong> v0.1.0
+        </div>
+      </div>
+
+      <!-- Main Content -->
+      <div class="content">
+        <!-- Executive Summary -->
+        <div class="executive-summary">
+          <h2>📋 Executive Summary</h2>
+          <p>{{ justification }}</p>
+        </div>
+
+        <!-- Decision Panel -->
+        <div class="decision-panel {{ decision|lower }}">
+          <div class="decision-icon">
+            {% if decision == "ALLOW" %}✓ {% elif decision == "WARN" %}⚠ {% else
+            %}✗{% endif %}
+          </div>
+          <div class="decision-text">{{ decision }}</div>
+          <div class="risk-score">
+            Risk Score: <strong>{{ risk_score }}/10</strong> ({{ risk_category
+            }})
+          </div>
+          <div class="progress-bar">
+            <div
+              class="progress-fill"
+              style="width: {{ (risk_score / 10 * 100)|round }}%;"
+            >
+              {{ risk_score }}
+            </div>
+          </div>
+        </div>
+
+        <!-- Detected Vulnerabilities -->
+        {% if detected_vulnerabilities %}
+        <div class="section">
+          <h2>🔍 Detected Vulnerabilities</h2>
+          <ul class="vulnerability-list">
+            {% for vuln in detected_vulnerabilities %}
+            <li
+              class="vulnerability-item {{ 'high' if risk_category == 'HIGH' else '' }}"
+            >
+              <strong>{{ vuln|replace('_', ' ')|title }}</strong>
+            </li>
+            {% endfor %}
+          </ul>
+        </div>
+        {% endif %}
+
+        <!-- ML Predictions (if available) -->
+        {% if ml_predictions %}
+        <div class="section">
+          <h2>🤖 Machine Learning Analysis</h2>
+          <p style="color: #6c757d; margin-bottom: 15px">
+            Analysis performed using 4 Random Forest classifiers (100 trees
+            each, max_depth=10)
+          </p>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Vulnerability Type</th>
+                <th>Prediction</th>
+                <th>Confidence</th>
+                <th>Risk Level</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for vuln_type, pred in ml_predictions.items() %}
+              <tr>
+                <td>{{ vuln_type|replace('_', ' ')|title }}</td>
+                <td>
+                  {% if pred.prediction == 1 %}
+                  <span class="badge danger">VULNERABLE</span>
+                  {% else %}
+                  <span class="badge success">SAFE</span>
+                  {% endif %}
+                </td>
+                <td>{{ (pred.confidence * 100)|round(1) }}%</td>
+                <td>
+                  {% if pred.confidence >= 0.8 %}
+                  <span
+                    class="risk-indicator {{ 'high' if pred.prediction == 1 else 'low' }}"
+                  ></span>
+                  {% if pred.prediction == 1 %}HIGH{% else %}HIGH{% endif %}
+                  CONFIDENCE {% elif pred.confidence >= 0.6 %}
+                  <span class="risk-indicator medium"></span>MODERATE {% else %}
+                  <span class="risk-indicator low"></span>LOW CONFIDENCE {%
+                  endif %}
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% endif %}
+
+        <!-- Security Features -->
+        {% if features %}
+        <div class="section">
+          <h2>🔬 Extracted Security Features</h2>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Feature</th>
+                <th>Value</th>
+                <th>Risk Indicator</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>External Calls</td>
+                <td>{{ features.external_call_count }}</td>
+                <td>
+                  {% if features.external_call_count > 2 %}
+                  <span class="risk-indicator medium"></span>High count = more
+                  attack surface {% else %}
+                  <span class="risk-indicator low"></span>Normal {% endif %}
+                </td>
+              </tr>
+              <tr>
+                <td>Delegatecall Count</td>
+                <td>{{ features.delegatecall_count }}</td>
+                <td>
+                  {% if features.delegatecall_count > 0 %}
+                  <span class="risk-indicator high"></span>Any delegatecall =
+                  risky {% else %} <span class="risk-indicator low"></span>None
+                  found {% endif %}
+                </td>
+              </tr>
+              <tr>
+                <td>State Changes After Call</td>
+                <td>{{ features.state_writes_after_call }}</td>
+                <td>
+                  {% if features.state_writes_after_call > 0 %}
+                  <span class="risk-indicator high"></span>Reentrancy risk {%
+                  else %} <span class="risk-indicator low"></span>Safe {% endif
+                  %}
+                </td>
+              </tr>
+              <tr>
+                <td>Uses tx.origin</td>
+                <td>{{ 'Yes' if features.uses_tx_origin else 'No' }}</td>
+                <td>
+                  {% if features.uses_tx_origin %}
+                  <span class="risk-indicator high"></span>AUTH vulnerability!
+                  {% else %} <span class="risk-indicator low"></span>Safe {%
+                  endif %}
+                </td>
+              </tr>
+              <tr>
+                <td>Has Access Control</td>
+                <td>
+                  {{ 'Yes' if features.has_access_control_modifier else 'No' }}
+                </td>
+                <td>
+                  {% if not features.has_access_control_modifier %}
+                  <span class="risk-indicator high"></span>No modifiers found {%
+                  else %} <span class="risk-indicator low"></span>Protected {%
+                  endif %}
+                </td>
+              </tr>
+              <tr>
+                <td>Has Reentrancy Guard</td>
+                <td>{{ 'Yes' if features.has_reentrancy_guard else 'No' }}</td>
+                <td>
+                  {% if not features.has_reentrancy_guard %}
+                  <span class="risk-indicator medium"></span>Consider adding
+                  guard {% else %}
+                  <span class="risk-indicator low"></span>Protected {% endif %}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        {% endif %}
+
+        <!-- Recommendations -->
+        {% if recommendations %}
+        <div class="section">
+          <h2>💡 Recommendations</h2>
+          <div class="recommendations">
+            <strong>Security Best Practices:</strong>
+            <ol>
+              {% for rec in recommendations %}
+              <li>{{ rec }}</li>
+              {% endfor %}
+            </ol>
+          </div>
+        </div>
+        {% endif %}
+
+        <!-- Risk Assessment Breakdown -->
+        {% if risk_assessment %}
+        <div class="section">
+          <h2>📊 Risk Score Breakdown</h2>
+          <p style="color: #6c757d; margin-bottom: 15px">
+            <strong>Formula:</strong> Σ(vulnerability_weight × ML_confidence)<br />
+            <strong>Weights:</strong> reentrancy=3.0, access_control=2.5,
+            unchecked_call=2.0, dangerous=2.5
+          </p>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Component</th>
+                <th>Weight</th>
+                <th>ML Confidence</th>
+                <th>Contribution</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for vuln_type, contribution in
+              risk_assessment.components.items() %}
+              <tr>
+                <td>{{ vuln_type|replace('_', ' ')|title }}</td>
+                <td>
+                  {% if vuln_type == 'reentrancy' %}3.0 {% elif vuln_type ==
+                  'access_control' %}2.5 {% elif vuln_type in ['unchecked_call',
+                  'unchecked_external_call'] %}2.0 {% else %}2.5{% endif %}
+                </td>
+                <td>
+                  {{ (ml_predictions[vuln_type].proba_vuln * 100)|round(1) if
+                  ml_predictions else 'N/A' }}%
+                </td>
+                <td><strong>{{ contribution|round(2) }}</strong></td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% endif %}
+      </div>
+
+      <!-- Footer -->
+      <div class="footer">
+        <p>
+          <strong>SC-Guard</strong> - Smart Contract Vulnerability Detection
+          System
+        </p>
+        <p>Powered by Slither Static Analysis + Machine Learning</p>
+        <p style="margin-top: 15px; font-size: 12px">
+          This report is for informational purposes only. Always conduct
+          thorough manual audits<br />
+          before deploying smart contracts to production.
+        </p>
+      </div>
+    </div>
+  </body>
+</html>
