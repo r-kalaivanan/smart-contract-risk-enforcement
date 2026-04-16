@@ -116,7 +116,7 @@ def scan(contract_path: str, json_output: bool, verbose: bool, models_dir: str, 
         features = extractor.extract()
         
         # Step 3: Add graph metrics
-        graph_builder = CallGraphBuilder(analyzer.slither)
+        graph_builder = CallGraphBuilder(analyzer.slither)  
         graph_features = graph_builder.analyze()
         features.max_call_depth = graph_features.max_call_depth
         features.has_cycle_with_external_call = graph_features.has_cycles and graph_features.external_calls_in_cycles > 0
